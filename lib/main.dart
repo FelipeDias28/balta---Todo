@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'models/item.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -14,24 +16,37 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
+      home: HomePage(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  var items = <Item>[];
 
+  HomePage() {
+    items.add(Item(title: "Item 1", done: false));
+    items.add(Item(title: "Item 2", done: true));
+    items.add(Item(title: "Item 3", done: false));
+  }
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Todo List"),
       ),
-      body: const SizedBox(
-        child: Center(
-          child: Text("Olá Mundo"),
-        ),
+      body: ListView.builder(
+        itemCount: widget.items.length, // Tamanho da lista em tempo de execução
+        itemBuilder: (context, index) {
+          // Como desenha esses itens na tela
+          return Text(widget.items[index].title ?? '');
+        },
       ),
     );
   }
