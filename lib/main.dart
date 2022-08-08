@@ -45,7 +45,13 @@ class _HomePageState extends State<HomePage> {
         itemCount: widget.items.length, // Tamanho da lista em tempo de execução
         itemBuilder: (context, index) {
           // Como desenha esses itens na tela
-          return Text(widget.items[index].title ?? '');
+          final item = widget.items[index];
+          return CheckboxListTile(
+            value: item.done, // True ou false
+            onChanged: (value) {}, // retorna True ou false
+            title: Text(item.title ?? ''),
+            key: Key(item.title ?? ''), // Não pode se repetir
+          );
         },
       ),
     );
