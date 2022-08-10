@@ -52,6 +52,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void remove(int index) {
+    setState(() {
+      widget.items.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,15 +83,25 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           // Como desenha esses itens na tela
           final item = widget.items[index];
-          return CheckboxListTile(
-            value: item.done, // True ou false
-            onChanged: (value) {
-              setState(() {
-                item.done = value;
-              });
-            }, // retorna True ou false
-            title: Text(item.title ?? ''),
+          return Dismissible(
             key: Key(item.title ?? ''), // Não pode se repetir
+            child: CheckboxListTile(
+              value: item.done, // True ou false
+              onChanged: (value) {
+                setState(() {
+                  item.done = value;
+                });
+              }, // retorna True ou false
+              title: Text(item.title ?? ''),
+            ),
+            background: Container(
+              // Foi utilizado Contaiuner pois ele ocupa todo o espaço disponível
+              // conforme o item é arrastado
+              color: Colors.red.withOpacity(0.2),
+            ),
+            onDismissed: (direction) {
+              remove(index);
+            },
           );
         },
       ),
