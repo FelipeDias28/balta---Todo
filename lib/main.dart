@@ -35,11 +35,42 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var newTaskController = TextEditingController();
+
+  void add() {
+    if (newTaskController.text.isEmpty) return;
+
+    setState(() {
+      widget.items.add(
+        Item(
+          title: newTaskController.text,
+          done: false,
+        ),
+      );
+
+      newTaskController.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Todo List"),
+        title: TextFormField(
+          controller: newTaskController,
+          keyboardType: TextInputType.text, // Forma do teclado
+          style: const TextStyle(
+            // o estilo da letra que será digitado
+            color: Colors.white,
+            fontSize: 20,
+          ),
+          decoration: const InputDecoration(
+            labelText: "Nova Tarefa",
+            labelStyle: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: widget.items.length, // Tamanho da lista em tempo de execução
@@ -48,11 +79,20 @@ class _HomePageState extends State<HomePage> {
           final item = widget.items[index];
           return CheckboxListTile(
             value: item.done, // True ou false
-            onChanged: (value) {}, // retorna True ou false
+            onChanged: (value) {
+              setState(() {
+                item.done = value;
+              });
+            }, // retorna True ou false
             title: Text(item.title ?? ''),
             key: Key(item.title ?? ''), // Não pode se repetir
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: add,
+        backgroundColor: Colors.pink[400],
+        child: const Icon(Icons.add),
       ),
     );
   }
