@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/item.dart';
 
@@ -24,11 +27,7 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatefulWidget {
   var items = <Item>[];
 
-  HomePage() {
-    items.add(Item(title: "Item 1", done: false));
-    items.add(Item(title: "Item 2", done: true));
-    items.add(Item(title: "Item 3", done: false));
-  }
+  HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -49,13 +48,42 @@ class _HomePageState extends State<HomePage> {
       );
 
       newTaskController.clear();
+      save();
     });
   }
 
   void remove(int index) {
     setState(() {
       widget.items.removeAt(index);
+      save();
     });
+  }
+
+  Future load() async {
+    // Sempre que acessa a dado, nem sempre é na hora, por isso async
+    var prefs = await SharedPreferences
+        .getInstance(); // instância do Shared Preferences
+    var data = prefs.getString("data");
+
+    if (data != null) {
+      Iterable decoded = jsonDecode(data); // Faz o parse de String para Json
+      List<Item> result = decoded
+          .map((x) => Item.fromJson(x))
+          .toList(); // Esse FromJson é da Nossa Model
+
+      setState(() {
+        widget.items = result;
+      });
+    }
+  }
+
+  save() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setString("data", jsonEncode(widget.items));
+  }
+
+  _HomePageState() {
+    load();
   }
 
   @override
@@ -89,7 +117,8 @@ class _HomePageState extends State<HomePage> {
               value: item.done, // True ou false
               onChanged: (value) {
                 setState(() {
-                  item.done = value;
+                  item.done = value; // Altera o valor se esta preenchido ou não
+                  save();
                 });
               }, // retorna True ou false
               title: Text(item.title ?? ''),
