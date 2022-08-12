@@ -112,21 +112,19 @@ class _HomePageState extends State<HomePage> {
           // Como desenha esses itens na tela
           final item = widget.items[index];
           return Dismissible(
-            key: Key(item.title ?? ''), // Não pode se repetir
-            child: CheckboxListTile(
-              value: item.done, // True ou false
-              onChanged: (value) {
-                setState(() {
-                  item.done = value; // Altera o valor se esta preenchido ou não
-                  save();
-                });
-              }, // retorna True ou false
-              title: Text(item.title ?? ''),
-            ),
             background: Container(
               // Foi utilizado Contaiuner pois ele ocupa todo o espaço disponível
               // conforme o item é arrastado
               color: Colors.red.withOpacity(0.2),
+            ),
+            key: Key(item.title ?? ''), // Não pode se repetir
+            child: CheckboxListTile(
+              title: Text(item.title ?? ''),
+              value: item.done, // True ou false
+              onChanged: (value) => setState(() {
+                item.done = value; // Altera o valor se esta preenchido ou não
+                save();
+              }), // retorna True ou false
             ),
             onDismissed: (direction) {
               remove(index);
